@@ -23,6 +23,27 @@ namespace NlogViewer
     /// </summary>
     public partial class NlogViewer : UserControl
     {
+        private bool _AutoScroll = false;
+        public bool AutoScroll
+        {
+            get
+            {
+                return _AutoScroll;
+            }
+            set
+            {
+                if (value == true)
+                {
+                    logView.LayoutUpdated += LogView_LayoutUpdated;
+                    _AutoScroll = value;
+                }
+                else
+                {
+                    logView.LayoutUpdated -= LogView_LayoutUpdated;
+                    _AutoScroll = value;
+                }
+            }
+        }
         public ObservableCollection<LogEventViewModel> LogEntries { get; private set; }
         public bool IsTargetConfigured { get; private set; }
 
@@ -60,6 +81,11 @@ namespace NlogViewer
                     target.LogReceived += LogReceived;
                 }
             }
+        }
+        private void LogView_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (logView.Items.Count > 2)
+                logView.ScrollIntoView(logView.Items[logView.Items.Count - 1]);
         }
 
         protected void LogReceived(NLog.Common.AsyncLogEventInfo log)

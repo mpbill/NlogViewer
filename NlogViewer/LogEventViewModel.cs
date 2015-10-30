@@ -48,6 +48,11 @@ namespace NlogViewer
                 Background = Brushes.Tomato;
                 BackgroundMouseOver = Brushes.IndianRed;
             }
+            else if(logEventInfo.Level==LogLevel.Debug)
+            {
+                Background = Brushes.LightBlue;
+                BackgroundMouseOver = Brushes.MediumBlue;
+            }
             else
             {
                 Background = Brushes.White;
