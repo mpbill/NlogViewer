@@ -21,9 +21,11 @@ namespace NlogViewer
     /// <summary>
     /// Interaction logic for NlogViewer.xaml
     /// </summary>
-    public partial class NlogViewer : UserControl
+    public partial class NlogViewer : UserControl, INotifyPropertyChanged
     {
         private bool _AutoScroll = false;
+        [Description("True/False Is AutoScroll Enabled")]
+        [TypeConverterAttribute(typeof(BooleanConverter))]
         public bool AutoScroll
         {
             get
@@ -45,10 +47,12 @@ namespace NlogViewer
             }
         }
         public ObservableCollection<LogEventViewModel> LogEntries { get; private set; }
+        public CollectionViewSource LogEntriesSource { get; private set; }
         public bool IsTargetConfigured { get; private set; }
 
         [Description("Width of time column in pixels"), Category("Data")]
         [TypeConverterAttribute(typeof(LengthConverter))]
+        
         public double TimeWidth { get; set; }
 
         [Description("Width of Logger column in pixels, or auto if not specified"), Category("Data")]
@@ -70,7 +74,9 @@ namespace NlogViewer
         {
             IsTargetConfigured = false;
             LogEntries = new ObservableCollection<LogEventViewModel>();
-
+            LogEntriesSource = new CollectionViewSource();
+            LogEntriesSource.Source = LogEntries;
+            LogEntriesSource.Filter += LogEntriesSource_Filter;
             InitializeComponent();
 
             if (!DesignerProperties.GetIsInDesignMode(this))
@@ -81,6 +87,14 @@ namespace NlogViewer
                     target.LogReceived += LogReceived;
                 }
             }
+            
+        }
+
+        void LogEntriesSource_Filter(object sender, FilterEventArgs e)
+        {
+            if (((LogEventViewModel)e.Item).Level == NLog.LogLevel.Debug.Name)
+                e.Accepted = true;
+
         }
         private void LogView_LayoutUpdated(object sender, EventArgs e)
         {
@@ -100,5 +114,7 @@ namespace NlogViewer
                 LogEntries.Add(vm);
             }));
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

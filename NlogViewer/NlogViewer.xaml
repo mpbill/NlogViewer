@@ -10,7 +10,7 @@
     <UserControl.Resources>
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding LogEntries}" Name="logView">
+        <ListView ItemsSource="{Binding LogEntriesSource}" Name="logView">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="ToolTip" Value="{Binding ToolTip}" />
