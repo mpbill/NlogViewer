@@ -10,7 +10,24 @@
     <UserControl.Resources>
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding LogEntriesSource}" Name="logView">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Expander Header="Filters">
+            <GroupBox>
+                <WrapPanel>
+                    <CheckBox x:Name="TraceCB" Margin="5" IsChecked="{Binding LogListFilter.Trace}">Trace</CheckBox>
+                    <CheckBox x:Name="WarningCB" Margin="5" IsChecked="{Binding LogListFilter.Warn}">Warn</CheckBox>
+                    <CheckBox x:Name="DebugCB" Margin="5" IsChecked="{Binding LogListFilter.Debug}">Debug</CheckBox>
+                    <CheckBox x:Name="InfoCB" Margin="5" IsChecked="{Binding LogListFilter.Info}">Info</CheckBox>
+                    <CheckBox x:Name="ErrorCB" Margin="5" IsChecked="{Binding LogListFilter.Error}">Error</CheckBox>
+                    <CheckBox x:Name="FatalCB" Margin="5" IsChecked="{Binding LogListFilter.Fatal}">Fatal</CheckBox>
+                    <CheckBox x:Name="HasExceptionCB" Margin="5" IsChecked="{Binding LogListFilter.HasException}">Has Exception</CheckBox>
+                </WrapPanel>
+            </GroupBox>
+        </Expander>
+        <ListView ItemsSource="{Binding FilteredLogEntries, Mode=TwoWay}" Name="logView" Grid.Row="1">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="ToolTip" Value="{Binding ToolTip}" />
