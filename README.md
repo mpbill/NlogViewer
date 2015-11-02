@@ -1,12 +1,13 @@
 [1]: http://dotnetsolutionsbytomi.blogspot.se/2011/06/creating-awesome-logging-control-with.html
 [nuget]: https://nuget.org/packages/NlogViewer/
 
-mpbill/NlogViewer
+NlogViewerWithFilterScroll
+================
 This is my fork of erizet/NlogViewer with the following additions:
 * Font and Color scheme for easy diferentiation of LogLevels
 * added LogCount DependancyProperty allowing you to set your own MaxLogCount
 * Filter option for LogLevels and HasException
-
+* AutoScroll property which if set to true, will scroll new LogItems into view.
 
 NlogViewer
 ==========
