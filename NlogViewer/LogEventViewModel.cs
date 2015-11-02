@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Media;
 using NLog;
+using Brushes = System.Windows.Media.Brushes;
+using FontFamily = System.Drawing.FontFamily;
+using FontStyle = System.Drawing.FontStyle;
 
 namespace NlogViewer
 {
@@ -20,7 +25,7 @@ namespace NlogViewer
             Exception = logEventInfo.Exception;
             LoggerName = logEventInfo.LoggerName;
             Time = logEventInfo.TimeStamp.ToString(CultureInfo.InvariantCulture);
-
+            
             SetupColors(logEventInfo);
         }
 
@@ -35,13 +40,16 @@ namespace NlogViewer
         public SolidColorBrush Foreground { get; private set; }
         public SolidColorBrush BackgroundMouseOver { get; private set; }
         public SolidColorBrush ForegroundMouseOver { get; private set; }
-
+        public FontWeight FontWeight { get; set; }
         private void SetupColors(LogEventInfo logEventInfo)
         {
+            FontWeight = FontWeights.Normal;
             if (logEventInfo.Level == LogLevel.Warn)
             {
                 Background = Brushes.Yellow;
-                BackgroundMouseOver = Brushes.GreenYellow;
+                BackgroundMouseOver = Brushes.Gold;
+                
+                
             }
             else if (logEventInfo.Level == LogLevel.Error)
             {
@@ -51,7 +59,13 @@ namespace NlogViewer
             else if(logEventInfo.Level==LogLevel.Debug)
             {
                 Background = Brushes.LightBlue;
-                BackgroundMouseOver = Brushes.MediumBlue;
+                BackgroundMouseOver = Brushes.LightSkyBlue;
+            }
+            else if (logEventInfo.Level == LogLevel.Fatal)
+            {
+                Background = Brushes.Tomato;
+                BackgroundMouseOver = Brushes.IndianRed;
+                FontWeight = FontWeights.UltraBold;
             }
             else
             {

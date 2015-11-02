@@ -14,7 +14,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Expander Header="Filters">
+        <Expander Header="Filters" x:Name="FilterExpander" Visibility="{Binding FilterVisibility}">
             <GroupBox>
                 <WrapPanel>
                     <CheckBox x:Name="TraceCB" Margin="5" IsChecked="{Binding LogListFilter.Trace}">Trace</CheckBox>
@@ -27,12 +27,13 @@
                 </WrapPanel>
             </GroupBox>
         </Expander>
-        <ListView ItemsSource="{Binding FilteredLogEntries, Mode=TwoWay}" Name="logView" Grid.Row="1">
+        <ListView ItemsSource="{Binding FilteredLogEntries, Mode=OneWay}" Name="logView" Grid.Row="1">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="ToolTip" Value="{Binding ToolTip}" />
                     <Setter Property="Background" Value="{Binding Background}" />
                     <Setter Property="Foreground" Value="{Binding Foreground}" />
+                    <Setter Property="FontWeight" Value="{Binding FontWeight}"></Setter>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="DarkOrange"/>
@@ -41,6 +42,7 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{Binding BackgroundMouseOver}"/>
                             <Setter Property="Foreground" Value="{Binding ForegroundMouseOver}"/>
+                            
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -51,8 +53,20 @@
                         <GridViewColumn DisplayMemberBinding="{Binding Time}" Header="Time" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=TimeWidth}"/>
                         <GridViewColumn DisplayMemberBinding="{Binding LoggerName}" Header="Logger" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=LoggerNameWidth}"/>
                         <GridViewColumn DisplayMemberBinding="{Binding Level}" Header="Level" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=LevelWidth}"/>
-                        <GridViewColumn DisplayMemberBinding="{Binding FormattedMessage}"  Header="Message" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=MessageWidth}"/>
-                        <GridViewColumn DisplayMemberBinding="{Binding Exception}" Header="Exception" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=ExceptionWidth}"/>
+                        <GridViewColumn Header="Message" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=MessageWidth}">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock DataContext="{Binding}" TextWrapping="Wrap" Text="{Binding FormattedMessage}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Exception" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=ExceptionWidth}">
+                         <GridViewColumn.CellTemplate>
+                             <DataTemplate>
+                                 <TextBlock TextWrapping="Wrap" Text="{Binding Exception, Mode=OneWay}" DataContext="{Binding}"></TextBlock>
+                             </DataTemplate>
+                         </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>

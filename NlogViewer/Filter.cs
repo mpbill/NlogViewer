@@ -12,13 +12,13 @@ namespace NlogViewer
 {
     public class Filter : INotifyPropertyChanged
     {
-        private bool? _Trace;
-        private bool? _Warn;
-        private bool? _Debug;
-        private bool? _Error;
-        private bool? _Info;
-        private bool? _HasException;
-        private bool? _Fatal;
+        private bool? _Trace = true;
+        private bool? _Warn = true;
+        private bool? _Debug = true;
+        private bool? _Error = true;
+        private bool? _Info = true;
+        private bool? _HasException = true;
+        private bool? _Fatal = true;
         public bool? Trace
         {
             get { return _Trace; }
@@ -48,7 +48,13 @@ namespace NlogViewer
             get { return _Info; }
             set { _Info = value; updateList(value, LogLevel.Info.Name); }
         }
-        public bool? HasException { get; set; }
+
+        
+        public bool? HasException
+        {
+            get { return _HasException; }
+            set { _HasException = value; PropertyChanged(this, new PropertyChangedEventArgs("HasException")); }
+        }
         public bool? Fatal
         {
             get { return _Fatal; }
@@ -61,7 +67,16 @@ namespace NlogViewer
         public event PropertyChangedEventHandler PropertyChanged;
         public Filter()
         {
-            Filters = new List<string>();
+            Filters = new List<string>()
+            {
+                LogLevel.Fatal.Name,
+                LogLevel.Debug.Name,
+                LogLevel.Error.Name,
+                LogLevel.Info.Name,
+                LogLevel.Trace.Name,
+                LogLevel.Warn.Name
+            };
+            
         }
         
         public void updateList(bool? value, string name)
