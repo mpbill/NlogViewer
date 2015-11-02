@@ -40,7 +40,7 @@ namespace Sample
             if (sender.Equals(btnWarning)) level = LogLevel.Warn;
             if (sender.Equals(btnError)) level = LogLevel.Error;
 
-            log.Log(level, tbLogText.Text);
+            log.Log(level, tbLogText.Text, new Exception());
         }
 
         private void BackgroundSending_Checked(object sender, RoutedEventArgs e)

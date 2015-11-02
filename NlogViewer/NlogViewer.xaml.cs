@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +17,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using NLog;
+using NLog.Common;
+using OLinq;
 namespace NlogViewer
 {
     /// <summary>
@@ -23,7 +27,27 @@ namespace NlogViewer
     /// </summary>
     public partial class NlogViewer : UserControl, INotifyPropertyChanged
     {
+        public ObservableCollection<LogEventViewModel> FilteredLogEntries { get; set; }
+        public int LogCount
+        {
+            get
+            {
+                return (int) GetValue(LogCountProperty);
+            }
+            set
+            {
+                SetValue(LogCountProperty, value);
+                
+            }
+        }
+        public static readonly DependencyProperty LogCountProperty = DependencyProperty.Register("LogCount",typeof(int), typeof(NlogViewer) );
+        public Filter LogListFilter 
+        { 
+            get; 
+            set; 
+        }
         private bool _AutoScroll = false;
+
         [Description("True/False Is AutoScroll Enabled")]
         [TypeConverterAttribute(typeof(BooleanConverter))]
         public bool AutoScroll
@@ -32,22 +56,10 @@ namespace NlogViewer
             {
                 return _AutoScroll;
             }
-            set
-            {
-                if (value == true)
-                {
-                    logView.LayoutUpdated += LogView_LayoutUpdated;
-                    _AutoScroll = value;
-                }
-                else
-                {
-                    logView.LayoutUpdated -= LogView_LayoutUpdated;
-                    _AutoScroll = value;
-                }
-            }
+            set { _AutoScroll = value; }
         }
         public ObservableCollection<LogEventViewModel> LogEntries { get; private set; }
-        public CollectionViewSource LogEntriesSource { get; private set; }
+        
         public bool IsTargetConfigured { get; private set; }
 
         [Description("Width of time column in pixels"), Category("Data")]
@@ -68,50 +80,90 @@ namespace NlogViewer
         [Description("Width of Exception column in pixels"), Category("Data")]
         [TypeConverterAttribute(typeof(LengthConverter))]
         public double ExceptionWidth { get; set; }
-
+        public Visibility FilterVisibility { get { return (Visibility)GetValue(FilterVisibilityProperty); } set {SetValue(FilterVisibilityProperty, value);} }
+        public static  readonly DependencyProperty FilterVisibilityProperty = DependencyProperty.Register("FilterVisibility", typeof(Visibility), typeof(NlogViewer));
 
         public NlogViewer()
         {
+            LogListFilter = new Filter();
             IsTargetConfigured = false;
             LogEntries = new ObservableCollection<LogEventViewModel>();
-            LogEntriesSource = new CollectionViewSource();
-            LogEntriesSource.Source = LogEntries;
-            LogEntriesSource.Filter += LogEntriesSource_Filter;
+            FilteredLogEntries = new ObservableCollection<LogEventViewModel>(LogEntries);
+            
+            LogListFilter.PropertyChanged += LogListFilter_PropertyChanged;
+            
             InitializeComponent();
+
 
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
+                
                 foreach (NlogViewerTarget target in NLog.LogManager.Configuration.AllTargets.Where(t => t is NlogViewerTarget).Cast<NlogViewerTarget>())
                 {
                     IsTargetConfigured = true;
                     target.LogReceived += LogReceived;
+                    
+
                 }
             }
             
         }
 
-        void LogEntriesSource_Filter(object sender, FilterEventArgs e)
+        public void UpdateFilteredList()
         {
-            if (((LogEventViewModel)e.Item).Level == NLog.LogLevel.Debug.Name)
-                e.Accepted = true;
+            
+                System.Threading.Thread.Sleep(100);FilteredLogEntries.Clear();
+            
+                if (LogListFilter.HasException.Value)
+                {
+                    foreach (var log in (from log in LogEntries
+                        where LogListFilter.Filters.Contains(log.Level) && log.Exception!=null
+                        select log))
+                    {
+                        FilteredLogEntries.Add(log);
+                    }
+                }
+                else
+                {
+                    foreach (var log in (from log in LogEntries
+                                         where (LogListFilter.Filters.Contains(log.Level) && log.Exception==null)
+                                         select log))
+                    {
+                        FilteredLogEntries.Add(log);
+                    }
+                }
+                logView.Items.Refresh();
+                logView.UpdateLayout();
+
+           
+            
+
+
+
+
 
         }
-        private void LogView_LayoutUpdated(object sender, EventArgs e)
+        private void LogListFilter_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (logView.Items.Count > 2)
-                logView.ScrollIntoView(logView.Items[logView.Items.Count - 1]);
+            Dispatcher.BeginInvoke(new Action(UpdateFilteredList));
         }
+        
 
         protected void LogReceived(NLog.Common.AsyncLogEventInfo log)
         {
-            LogEventViewModel vm = new LogEventViewModel(log.LogEvent);
-
+           
+            LogEventViewModel vm = new LogEventViewModel(log.LogEvent);           
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                if (LogEntries.Count >= 50)
+                if(LogCount!=0 && LogEntries.Count>=LogCount)
                     LogEntries.RemoveAt(0);
                 
                 LogEntries.Add(vm);
+                UpdateFilteredList();
+                if (AutoScroll)
+                {
+                    logView.ScrollIntoView(vm);
+                }
             }));
         }
 
