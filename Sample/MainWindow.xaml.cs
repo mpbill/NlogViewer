@@ -22,6 +22,7 @@ namespace Sample
     /// </summary>
     public partial class MainWindow : Window
     {
+        public bool? AttachException { get; set; }
         Task _logTask;
         CancellationTokenSource _cancelLogTask;
 
@@ -39,8 +40,15 @@ namespace Sample
             if (sender.Equals(btnDebug)) level = LogLevel.Debug;
             if (sender.Equals(btnWarning)) level = LogLevel.Warn;
             if (sender.Equals(btnError)) level = LogLevel.Error;
-
-            log.Log(level, tbLogText.Text, new Exception());
+            if (AttachException.HasValue && AttachException.Value)
+            {
+                log.Log(level, tbLogText.Text,
+                    new Exception("Test Outer Exception", new NullReferenceException("Test NullRef Inner Exception")));
+            }
+            else
+            {
+                log.Log(level, tbLogText.Text);
+            }
         }
 
         private void BackgroundSending_Checked(object sender, RoutedEventArgs e)

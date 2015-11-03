@@ -17,7 +17,6 @@ namespace NlogViewer
         private bool? _Debug = true;
         private bool? _Error = true;
         private bool? _Info = true;
-        private bool? _HasException = true;
         private bool? _Fatal = true;
         public bool? Trace
         {
@@ -47,13 +46,6 @@ namespace NlogViewer
         {
             get { return _Info; }
             set { _Info = value; updateList(value, LogLevel.Info.Name); }
-        }
-
-        
-        public bool? HasException
-        {
-            get { return _HasException; }
-            set { _HasException = value; PropertyChanged(this, new PropertyChangedEventArgs("HasException")); }
         }
         public bool? Fatal
         {

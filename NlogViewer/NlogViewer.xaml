@@ -23,7 +23,7 @@
                     <CheckBox x:Name="InfoCB" Margin="5" IsChecked="{Binding LogListFilter.Info}">Info</CheckBox>
                     <CheckBox x:Name="ErrorCB" Margin="5" IsChecked="{Binding LogListFilter.Error}">Error</CheckBox>
                     <CheckBox x:Name="FatalCB" Margin="5" IsChecked="{Binding LogListFilter.Fatal}">Fatal</CheckBox>
-                    <CheckBox x:Name="HasExceptionCB" Margin="5" IsChecked="{Binding LogListFilter.HasException}">Has Exception</CheckBox>
+                    
                 </WrapPanel>
             </GroupBox>
         </Expander>

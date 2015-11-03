@@ -80,7 +80,35 @@ namespace NlogViewer
         [Description("Width of Exception column in pixels"), Category("Data")]
         [TypeConverterAttribute(typeof(LengthConverter))]
         public double ExceptionWidth { get; set; }
-        public Visibility FilterVisibility { get { return (Visibility)GetValue(FilterVisibilityProperty); } set {SetValue(FilterVisibilityProperty, value);} }
+
+        public Visibility FilterVisibility
+        {
+            get
+            {
+                return (Visibility)GetValue(FilterVisibilityProperty);
+            }
+            set
+            {
+                SetValue(FilterVisibilityProperty, value);
+                if (value == Visibility.Visible && this.IsInitialized)
+                {
+                    LogListFilter.PropertyChanged += LogListFilter_PropertyChanged;
+                    logView.ItemsSource = FilteredLogEntries;
+                    logView.UpdateLayout();
+                    logView.Items.Refresh();
+
+                }
+                else if (value == Visibility.Collapsed && this.IsInitialized)
+                {
+                    LogListFilter.PropertyChanged -= LogListFilter_PropertyChanged;
+                    logView.ItemsSource = LogEntries;
+                    logView.UpdateLayout();
+                    logView.Items.Refresh();
+                }
+            }
+        }
+
+
         public static  readonly DependencyProperty FilterVisibilityProperty = DependencyProperty.Register("FilterVisibility", typeof(Visibility), typeof(NlogViewer));
 
         public NlogViewer()
@@ -89,9 +117,20 @@ namespace NlogViewer
             IsTargetConfigured = false;
             LogEntries = new ObservableCollection<LogEventViewModel>();
             FilteredLogEntries = new ObservableCollection<LogEventViewModel>(LogEntries);
-            
-            LogListFilter.PropertyChanged += LogListFilter_PropertyChanged;
-            
+            if (FilterVisibility == Visibility.Visible)
+            {
+                LogListFilter.PropertyChanged += LogListFilter_PropertyChanged;
+                logView.ItemsSource = FilteredLogEntries;
+                logView.UpdateLayout();
+                logView.Items.Refresh();
+            }
+            else
+            {
+                LogListFilter.PropertyChanged -= LogListFilter_PropertyChanged;
+                logView.ItemsSource = LogEntries;
+                logView.UpdateLayout();
+                logView.Items.Refresh();
+            }
             InitializeComponent();
 
 
@@ -112,26 +151,15 @@ namespace NlogViewer
         public void UpdateFilteredList()
         {
             
-                System.Threading.Thread.Sleep(100);FilteredLogEntries.Clear();
-            
-                if (LogListFilter.HasException.Value)
+                FilteredLogEntries.Clear();
+                foreach (var log in (from log in LogEntries
+                    where LogListFilter.Filters.Contains(log.Level)
+                    select log))
                 {
-                    foreach (var log in (from log in LogEntries
-                        where LogListFilter.Filters.Contains(log.Level) && log.Exception!=null
-                        select log))
-                    {
-                        FilteredLogEntries.Add(log);
-                    }
+                    FilteredLogEntries.Add(log);
+                        
                 }
-                else
-                {
-                    foreach (var log in (from log in LogEntries
-                                         where (LogListFilter.Filters.Contains(log.Level) && log.Exception==null)
-                                         select log))
-                    {
-                        FilteredLogEntries.Add(log);
-                    }
-                }
+               
                 logView.Items.Refresh();
                 logView.UpdateLayout();
 

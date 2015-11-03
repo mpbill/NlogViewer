@@ -5,12 +5,12 @@
         Title="NLogWPFControl Sample" Height="350" Width="525">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        
-        <GroupBox Grid.Row="0" Header="Send">
+        <GroupBox Grid.Row="1" Header="Send">
             <StackPanel Orientation="Vertical">
                 <Label x:Name="lblLogText" Content="Text" />
                 <TextBox x:Name="tbLogText" Text="Sample text goes here...." HorizontalAlignment="Stretch" />
@@ -19,21 +19,20 @@
                     <Button x:Name="btnDebug" Content="Debug" Click="Send_Click" />
                     <Button x:Name="btnWarning" Content="Warning" Click="Send_Click" />
                     <Button x:Name="btnError" Content="Error" Click="Send_Click" />
+                    <CheckBox VerticalAlignment="Center" x:Name="AttachExceptionCheckBox" IsChecked="{Binding AttachException}">Attach Exception</CheckBox>
                 </StackPanel>
             </StackPanel>            
         </GroupBox>
 
-        <GroupBox Grid.Row="1" Header="Autosending">
+        <GroupBox Grid.Row="2" Header="Autosending">
             <StackPanel Orientation="Vertical">
                 <CheckBox x:Name="chkBackgroundSending" Content="Send logs from background thread." Checked="BackgroundSending_Checked" IsChecked="False" Unchecked="BackgroundSending_Unchecked" />
             </StackPanel>
         </GroupBox>
 
 
-        <GroupBox Grid.Row="2" Header="NlogViewer">
-            <nlog:NlogViewer x:Name="LogCtrl" LogCount="0" FilterVisibility="Visible"  AutoScroll="True" TimeWidth="AUTO" LoggerNameWidth="0" LevelWidth="auto" ExceptionWidth="auto" MessageWidth="auto">
-                
-            </nlog:NlogViewer>
+        <GroupBox Grid.Row="3" Header="NlogViewerGB">
+            <nlog:NlogViewer x:Name="LogCtrl" LogCount="0" FilterVisibility="Visible"  AutoScroll="True" TimeWidth="AUTO" LoggerNameWidth="0" LevelWidth="auto" ExceptionWidth="auto" MessageWidth="auto" />
         </GroupBox>
 
     </Grid>
