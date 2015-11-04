@@ -29,6 +29,13 @@ namespace Sample
         public MainWindow()
         {
             InitializeComponent();
+            LogCtrl.Width = LogCtrl.TimeWidth + LogCtrl.ExceptionWidth + LogCtrl.MessageWidth;
+            LogCtrl.PropertyChanged += LogCtrl_PropertyChanged;
+        }
+
+        private void LogCtrl_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            
         }
 
         private void Send_Click(object sender, RoutedEventArgs e)
@@ -72,6 +79,7 @@ namespace Sample
             }
 
             log.Debug("Backgroundtask stopped.");
+            
         }
 
 

@@ -64,7 +64,6 @@ namespace NlogViewer
 
         [Description("Width of time column in pixels"), Category("Data")]
         [TypeConverterAttribute(typeof(LengthConverter))]
-        
         public double TimeWidth { get; set; }
 
         [Description("Width of Logger column in pixels, or auto if not specified"), Category("Data")]
@@ -112,26 +111,15 @@ namespace NlogViewer
         public void UpdateFilteredList()
         {
             
-                System.Threading.Thread.Sleep(100);FilteredLogEntries.Clear();
-            
-                if (LogListFilter.HasException.Value)
+                FilteredLogEntries.Clear();            
+                
+                foreach (var log in (from log in LogEntries
+                                        where LogListFilter.Filters.Contains(log.Level)
+                                        select log))
                 {
-                    foreach (var log in (from log in LogEntries
-                        where LogListFilter.Filters.Contains(log.Level) && log.Exception!=null
-                        select log))
-                    {
-                        FilteredLogEntries.Add(log);
-                    }
+                    FilteredLogEntries.Add(log);
                 }
-                else
-                {
-                    foreach (var log in (from log in LogEntries
-                                         where (LogListFilter.Filters.Contains(log.Level) && log.Exception==null)
-                                         select log))
-                    {
-                        FilteredLogEntries.Add(log);
-                    }
-                }
+                
                 logView.Items.Refresh();
                 logView.UpdateLayout();
 

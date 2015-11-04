@@ -23,7 +23,7 @@
                     <CheckBox x:Name="InfoCB" Margin="5" IsChecked="{Binding LogListFilter.Info}">Info</CheckBox>
                     <CheckBox x:Name="ErrorCB" Margin="5" IsChecked="{Binding LogListFilter.Error}">Error</CheckBox>
                     <CheckBox x:Name="FatalCB" Margin="5" IsChecked="{Binding LogListFilter.Fatal}">Fatal</CheckBox>
-                    <CheckBox x:Name="HasExceptionCB" Margin="5" IsChecked="{Binding LogListFilter.HasException}">Has Exception</CheckBox>
+                    
                 </WrapPanel>
             </GroupBox>
         </Expander>
@@ -34,14 +34,19 @@
                     <Setter Property="Background" Value="{Binding Background}" />
                     <Setter Property="Foreground" Value="{Binding Foreground}" />
                     <Setter Property="FontWeight" Value="{Binding FontWeight}"></Setter>
+                    <Setter Property="MinHeight" Value="30"></Setter>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="DarkOrange"/>
-                            <Setter Property="Foreground" Value="black"/>
+                            <Setter Property="BorderThickness"  Value="3"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                            <Setter Property="Background" Value="{Binding Background}"></Setter>
+                            
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{Binding BackgroundMouseOver}"/>
                             <Setter Property="Foreground" Value="{Binding ForegroundMouseOver}"/>
+                            <Setter Property="OpacityMask" Value="{x:Null}"></Setter>
                             
                         </Trigger>
                     </Style.Triggers>
@@ -50,6 +55,7 @@
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
+                        
                         <GridViewColumn DisplayMemberBinding="{Binding Time}" Header="Time" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=TimeWidth}"/>
                         <GridViewColumn DisplayMemberBinding="{Binding LoggerName}" Header="Logger" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=LoggerNameWidth}"/>
                         <GridViewColumn DisplayMemberBinding="{Binding Level}" Header="Level" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type nlogViewer:NlogViewer}}, Path=LevelWidth}"/>
